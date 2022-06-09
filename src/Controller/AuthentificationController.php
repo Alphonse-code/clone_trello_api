@@ -19,6 +19,7 @@ use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
 
+header('Access-Control-Allow-Origin: *');
 class AuthentificationController extends ApiController
 {
     private $em;
@@ -104,7 +105,7 @@ class AuthentificationController extends ApiController
                 'code' => 200,
                 'message' => 'Login successful',
             ];
-            return new JsonResponse($array, Response::HTTP_SERVER_ERROR);
+            return new JsonResponse($array, Response::HTTP_OK);
         }
     }
 
