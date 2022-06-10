@@ -142,7 +142,7 @@ class AuthentificationController extends ApiController
     }
 
     /**
-     * @Route("/forgotPasswordAction", name="forgotPasswordAction", methods={"GET"})
+     * @Route("/forgot_password", name="forgot_password", methods={"GET"})
      * @param Request $request
      * @param UserPasswordEncoderInterface $passwordEncoder
      * @return JsonResponse

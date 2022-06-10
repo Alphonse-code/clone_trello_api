@@ -43,11 +43,11 @@ class Users implements UserInterface
 
     /**
      * User constructor.
-     * @param $username
+     * @param $email
      */
-    public function __construct($username)
+    public function __construct($email)
     {
-        $this->username = $username;
+        $this->email = $email;
     }
 
     /**
