@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
 /**
  * @Route("/projet")
  */
@@ -36,6 +37,9 @@ class ProjetController extends ApiController
      */
     public function creerProjet(Request $request): JsonResponse
     {
+        $checkMail = $this->repository->getMailExist($request->get('username'));
+        if (!$checkMail) {
+        }
         $request = $this->transformJsonBody($request);
         // On recuper le valeur de chaque champ
         $titre = $request->get('titre');
@@ -81,7 +85,7 @@ class ProjetController extends ApiController
      */
     public function getAllProjet(): JsonResponse
     {
-        if (!$this->isGranted('ROLE_ADMIN')) {
+        /* if (!$this->isGranted('ROLE_ADMIN')) {
             return new JsonResponse(
                 [
                     'success' => false,
@@ -90,8 +94,9 @@ class ProjetController extends ApiController
                 ],
                 Response::HTTP_UNAUTHORIZED
             );
-        }
+        }*/
         $projets = $this->repository->findAll();
+
         $data = [];
         foreach ($projets as $projet) {
             $data[] = [
@@ -103,6 +108,7 @@ class ProjetController extends ApiController
                 'projet_datefin' => $projet->getDateFin(),
             ];
         }
+        header('Content-type: application/json');
         return new JsonResponse($data, Response::HTTP_OK);
     }
 
