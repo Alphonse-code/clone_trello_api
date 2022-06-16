@@ -104,11 +104,14 @@ class ProjetController extends ApiController
                 'projet_titre' => $projet->getTitre(),
                 'projet_description' => $projet->getDescription(),
                 'projet_statut' => $projet->getStatut(),
-                'projet_datedebut' => $projet->getDateDebut(),
-                'projet_datefin' => $projet->getDateFin(),
+                'projet_datedebut' => date_format(
+                    $projet->getDateDebut(),
+                    'Y-m-d'
+                ),
+                'projet_datefin' => date_format($projet->getDateFin(), 'Y-m-d'),
             ];
         }
-        header('Content-type: application/json');
+
         return new JsonResponse($data, Response::HTTP_OK);
     }
 
