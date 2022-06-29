@@ -19,7 +19,7 @@ use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
 
-header('Access-Control-Allow-Origin: *');
+//header('Access-Control-Allow-Origin: *');
 class AuthentificationController extends ApiController
 {
     private $em;
@@ -142,7 +142,7 @@ class AuthentificationController extends ApiController
     }
 
     /**
-     * @Route("/forgot_password", name="forgot_password", methods={"GET"})
+     * @Route("/forgot_password", name="forgot_password", methods={"POST"})
      * @param Request $request
      * @param UserPasswordEncoderInterface $passwordEncoder
      * @return JsonResponse
@@ -184,15 +184,15 @@ class AuthentificationController extends ApiController
                 ->subject('Mot de passe oublier')
                 ->text('Mot de passe oublier')
                 ->html(
-                    '
+                    " 
             <h3>Veuillez-trouvez ci- après le code de reinitialisation de votre mot de passe</h3> 
-            : <h3 style="color:blue"; font-size: 12px; font-weight: bold;>' .
-                        $token .
-                        '</h3>'
+             <h3 style='color:blue; font-size: 20px; font-weight: bold; text-decoration: none;'>
+            <a href='http://localhost:3000/reset?token=$token'>Cliquez-ici pour réinitialiser</a></h3>"
                 );
             $mailer->send($email);
             $array = [
                 'success' => true,
+                'message' => 'E-mail envoyé avec succès',
                 'code' => 200,
                 'access_token' => $token,
             ];
@@ -206,21 +206,14 @@ class AuthentificationController extends ApiController
      * @param Request $request
      * @return JsonResponse
      */
-    public function reset_password(
-        Request $request,
-        string $token,
-        UserPasswordEncoderInterface $passwordEncoder
-    ): JsonResponse {
+    public function reset_password(Request $request, string $token,UserPasswordEncoderInterface $passwordEncoder): JsonResponse {
         $entityManager = $this->getDoctrine()->getManager();
         $request = $this->transformJsonBody($request);
         $token = $request->get('token');
         $new_password = $request->get('new_password');
         $user = $this->repository->findOneBy(['passwordResetToken' => $token]);
-
         if (empty($token) || empty($newpassword)) {
-            return $this->respondValidationError(
-                'Token invalide ou mot de passe'
-            );
+            return $this->respondValidationError('Token invalide ou mot de passe');
         }
         if ($user === null) {
             return new JsonResponse('Utilisateur inexistant ');
