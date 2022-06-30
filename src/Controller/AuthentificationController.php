@@ -187,7 +187,7 @@ class AuthentificationController extends ApiController
                     " 
             <h3>Veuillez-trouvez ci- après le code de reinitialisation de votre mot de passe</h3> 
              <h3 style='color:blue; font-size: 20px; font-weight: bold; text-decoration: none;'>
-            <a href='http://localhost:3000/reset?token=$token'>Cliquez-ici pour réinitialiser</a></h3>"
+            <a href='http://localhost:3000/new_password/$token'>Cliquez-ici pour réinitialiser</a></h3>"
                 );
             $mailer->send($email);
             $array = [
@@ -199,6 +199,37 @@ class AuthentificationController extends ApiController
             return new JsonResponse($array, JsonResponse::HTTP_OK);
         }
     }
+
+    /**
+     * Apres forgot password, creer nouveau password
+     *
+     * @Route("/new_password/{token}", name="new_password", methods={"POST"})
+     * @param Request $request
+     * @param UserPasswordEncoderInterface $encoder
+     * @return JsonResponse
+     */
+    public function new_password( string $token,Request $request,UserPasswordEncoderInterface $encoder): JsonResponse {
+        $entityManager = $this->getDoctrine()->getManager();
+        $request = $this->transformJsonBody($request);
+
+        $new_password = $request->get('password');
+        if (empty($new_password)) {
+            return $this->respondValidationError(
+                'Invalid Password '
+            );
+        }
+        $user = $this->repository->findOneBy(['forgotPasswordToke' => $token]);
+        $user->setForgotPasswordToke(null);
+        $user->setPassword($encoder->encodePassword($user, $new_password));
+        $entityManager->flush();
+        $array = [
+            'success' => true,
+            'code' => 200,
+            'message' => 'Mots de passe bien reinitialiser',
+        ];
+        return new JsonResponse($array);
+    }
+
     /**
      *
      * @Route("/reset", name="app_reset_password", methods="POST")
@@ -227,38 +258,6 @@ class AuthentificationController extends ApiController
         return new JsonResponse('Utilisateur existant ');
     }
 
-    /**
-     * registration fonction require username,password and valid email
-     *
-     * @Route("/new_password", name="new_password", methods={"POST"})
-     * @param Request $request
-     * @param UserPasswordEncoderInterface $encoder
-     * @return JsonResponse
-     */
-    public function new_password(
-        Request $request,
-        UserPasswordEncoderInterface $encoder
-    ): JsonResponse {
-        $entityManager = $this->getDoctrine()->getManager();
-        $request = $this->transformJsonBody($request);
-        $token = $request->get('token');
-        $new_password = $request->get('new_password');
-        if (empty($token) || empty($new_password)) {
-            return $this->respondValidationError(
-                'Invalid Username or Password or Email'
-            );
-        }
-        $user = $this->repository->findOneBy(['forgotPasswordToke' => $token]);
-        $user->setForgotPasswordToke(null);
-        $user->setPassword($encoder->encodePassword($user, $new_password));
-        $entityManager->flush();
-        $array = [
-            'success' => true,
-            'code' => 200,
-            'message' => 'Mots de passe bien reinitialiser',
-        ];
-        return new JsonResponse($array);
-    }
 
     /**
      * @Route("/api/updateUser/{id}", name="updateUser", methods={"PUT", "POST"})
