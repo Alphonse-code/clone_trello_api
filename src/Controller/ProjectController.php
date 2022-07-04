@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use DateTime;
+use App\Entity\Users;
 use App\Entity\Project;
 use App\Controller\ApiController;
 use App\Repository\ProjectRepository;
@@ -11,9 +12,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @Route("/project")
+ *
  */
 class ProjectController extends ApiController
 {
@@ -62,6 +65,7 @@ class ProjectController extends ApiController
                 $project->setStatusProject($status);
                 $project->setBigindateProject(new \DateTime($bigindate));
                 $project->setEnddateProject(new \DateTime($enddate));
+                $project->setUser($this->getUser()->getId());
                 $this->em->persist($project);
                 $this->em->flush();
                 $array[] = [
