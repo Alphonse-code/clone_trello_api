@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20220609101137 extends AbstractMigration
+final class Version20220702150643 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,12 +20,16 @@ final class Version20220609101137 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE TABLE projet (id INT AUTO_INCREMENT NOT NULL, titre VARCHAR(255) NOT NULL, description LONGTEXT NOT NULL, statut VARCHAR(255) NOT NULL, date_debut DATE NOT NULL, date_fin DATE NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('ALTER TABLE task ADD projects_id INT NOT NULL');
+        $this->addSql('ALTER TABLE task ADD CONSTRAINT FK_527EDB251EDE0F55 FOREIGN KEY (projects_id) REFERENCES project (id)');
+        $this->addSql('CREATE INDEX IDX_527EDB251EDE0F55 ON task (projects_id)');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('DROP TABLE projet');
+        $this->addSql('ALTER TABLE task DROP FOREIGN KEY FK_527EDB251EDE0F55');
+        $this->addSql('DROP INDEX IDX_527EDB251EDE0F55 ON task');
+        $this->addSql('ALTER TABLE task DROP projects_id');
     }
 }

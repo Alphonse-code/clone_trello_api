@@ -2,7 +2,11 @@
 
 namespace App\Entity;
 
+use App\Entity\Task;
+use App\Entity\Project;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -35,6 +39,16 @@ class Users implements UserInterface
      * @Assert\Email(message="email format invalide")
      */
     private $email;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Project::class, mappedBy="user")
+     */
+    private $projects;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Task::class, mappedBy="user")
+     */
+    private $tasks;
 
     /**
      * @ORM\Column(type="json")
@@ -147,5 +161,21 @@ class Users implements UserInterface
         $this->forgotPasswordToke = $forgotPasswordToke;
 
         return $this;
+    }
+
+    /**
+     * @return Collection|Project[]
+     */
+    public function getProjects(): Collection
+    {
+        return $this->projects;
+    }
+
+    /**
+     * @return Collection|Task[]
+     */
+    public function getTasks(): Collection
+    {
+        return $this->tasks;
     }
 }
