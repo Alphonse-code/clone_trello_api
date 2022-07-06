@@ -46,6 +46,6 @@ security:
         - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
 
         - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
-        - { path: ^/api/users, roles: ROLE_ADMIN}
+        - { path: ^/api/users, roles: ROLE_USER}
         - { path: ^/api/admin, roles: ROLE_ADMIN }
         - { path: ^/api/superadmin, roles: ROLE_SUPER_ADMIN }

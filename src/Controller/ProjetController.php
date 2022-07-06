@@ -38,7 +38,6 @@ class ProjetController extends ApiController
     public function creerProjet(Request $request): JsonResponse
     {
         if ($request->getMethod() == 'POST') {
-            
             $request = $this->transformJsonBody($request);
             // On recuper le valeur de chaque champ
             $titre = $request->get('titre');
