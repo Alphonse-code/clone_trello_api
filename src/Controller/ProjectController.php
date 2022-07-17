@@ -38,7 +38,7 @@ class ProjectController extends ApiController
     public function getProjects(): JsonResponse
     {
         // dd($this->getUser()->getId());
-        if (!$this->isGranted('ROLE_USER')) {
+        if (!$this->isGranted('ROLE_ADMIN')) {
             return new JsonResponse(
                 [
                     'success' => false,
@@ -95,12 +95,14 @@ class ProjectController extends ApiController
 
         if ($request->getMethod() == 'POST') {
             $request = $this->transformJsonBody($request);
+
             // On recuper le valeur de chaque champ
             $title = $request->get('title');
             $type = $request->get('type');
             $description = $request->get('description');
             $status = $request->get('status');
             $bigindate = $request->get('bigindate');
+
             $enddate = $request->get('enddate');
 
             if (
@@ -118,6 +120,7 @@ class ProjectController extends ApiController
                 $project->setStatusProject($status);
                 $project->setBigindateProject(new \DateTime($bigindate));
                 $project->setEnddateProject(new \DateTime($enddate));
+
                 $project->setUser($this->getUser());
                 $this->em->persist($project);
                 $this->em->flush();
@@ -177,7 +180,7 @@ class ProjectController extends ApiController
 
     /**
      * Maitre à jour l'iformation du projet
-     * @Route("/update/{id}", name="update")
+     * @Route("/update_p/{id}", name="app_update_p", methods={"PUT"})
      * @param Request $request
      * @param int $id
      * @return void
@@ -185,47 +188,41 @@ class ProjectController extends ApiController
     public function updateProject(Request $request, $id)
     {
         // $project = $this->getPprojectById($id);
-
-        if ($request->getMethod() == 'POST') {
-            $request = $this->transformJsonBody($request);
-            // On recuper le valeur de chaque champ
-            $titre = $request->get('titre');
-            $description = $request->get('description');
-            $statut = $request->get('statut');
-            $date_debut = $request->get('date_debut');
-            $date_fin = $request->get('date_fin');
-
-            if (
-                !empty($date_debut) ||   
-                !empty($date_fin) ||
-                !empty($titre) ||
-                !empty($description) ||
-                !empty($status)
-            ) {
-                $projet = new Projet();
-                $projet->setTitre($titre);
-                $projet->setDescription($description);
-                $projet->setStatut($statut);
-                $projet->setDateDebut(new \DateTime($date_debut));
-                $projet->setDateFin(new \DateTime($date_fin));
-
-                $this->em->persist($projet);
-                $this->em->flush();
-
-                $array[] = [
-                    'success' => true,
-                    'code' => 200,
-                    'message' => 'Project created successfully',
-                ];
-                return new JsonResponse($array, Response::HTTP_OK);
-            }
-            $array[] = [
+        $project = $this->repository->find($id);
+        if (!$project) {
+            $data = [
                 'success' => false,
-                'code' => 400,
-                'message' => 'Champ invalid',
+                'status' => 404,
+                'message' => 'Project not found',
             ];
-            return new JsonResponse($array, Response::HTTP_BAD_REQUEST);
+            return new JsonResponse($data, Response::HTTP_NOT_FOUND);
         }
+
+        $request = $this->transformJsonBody($request);
+
+        // On recuper le valeur de chaque champ
+        $title = $request->get('project_title');
+        $type = $request->get('project_type');
+        $description = $request->get('project_description');
+        $status = $request->get('project_status');
+        $bigindate = $request->get('project_bigindate');
+        $enddate = $request->get('project_enddate');
+
+        $project->setTitleProject($title);
+        $project->setTypeProject($type);
+        $project->setDescriptionProject($description);
+        $project->setStatusProject($status);
+        $project->setBigindateProject(new \DateTime($bigindate));
+        $project->setEnddateProject(new \DateTime($enddate));
+
+        $this->em->flush();
+
+        $array[] = [
+            'success' => true,
+            'code' => 200,
+            'message' => 'Project updated successfully',
+        ];
+        return new JsonResponse($array, Response::HTTP_OK);
 
         $response = [
             'success' => false,
@@ -233,5 +230,35 @@ class ProjectController extends ApiController
             'message' => ' ---- Method Not Allowed ----',
         ];
         return new JsonResponse($response, Response::HTTP_METHOD_NOT_ALLOWED);
+    }
+
+    /**
+     * @Route("/delete_p/{id}", name="app_delete_p", methods={"DELETE"})
+     *
+     * @param [type] $id
+     * @return void
+     */
+    public function deleteProject(Request $request, $id)
+    {
+        $project = $this->repository->find($id);
+
+        if (!$project) {
+            $response = [
+                'success' => false,
+                'code' => 404,
+                'message' => 'Projet not found',
+            ];
+            return new JsonResponse($response, Response::HTTP_NOT_FOUND);
+        }
+        if ($request->getMethod() == 'DELETE') {
+            $this->em->remove($project);
+            $this->em->flush();
+            $response = [
+                'success' => true,
+                'code' => 200,
+                'message' => 'Project deleted successfully',
+            ];
+            return new JsonResponse($response, Response::HTTP_OK);
+        }
     }
 }

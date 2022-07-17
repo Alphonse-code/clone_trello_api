@@ -185,6 +185,7 @@ class ProjetController extends ApiController
             $projet->setStatut($statut);
             $projet->setDateDebut(new \DateTime($date_debut));
             $projet->setDateFin(new \DateTime($date_fin));
+            
             $this->em->flush();
 
             $response = [
