@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Entity\Task;
 use App\Entity\Project;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\OneToMany;
@@ -45,11 +44,12 @@ class Users implements UserInterface
      */
     private $projects;
 
+  
     /**
-     * @ORM\OneToMany(targetEntity=Task::class, mappedBy="user")
+     * @ORM\OneToMany(targetEntity=Carte::class, mappedBy="user")
      */
-    private $tasks;
-
+    private $carte;
+    
     /**
      * @ORM\Column(type="json")
      *
@@ -77,6 +77,11 @@ class Users implements UserInterface
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $forgotPasswordToke;
+
+    /**
+     * @ORM\Column(type="string", length=20, nullable=true)
+     */
+    private $images;
 
     public function getId(): ?int
     {
@@ -178,5 +183,17 @@ class Users implements UserInterface
     public function getTasks(): Collection
     {
         return $this->tasks;
+    }
+
+    public function getImages(): ?string
+    {
+        return $this->images;
+    }
+
+    public function setImages(?string $images): self
+    {
+        $this->images = $images;
+
+        return $this;
     }
 }

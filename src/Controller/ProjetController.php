@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
- * @Route("/projet")
+ * @Route("projet")
  */
 class ProjetController extends ApiController
 {
@@ -185,7 +185,7 @@ class ProjetController extends ApiController
             $projet->setStatut($statut);
             $projet->setDateDebut(new \DateTime($date_debut));
             $projet->setDateFin(new \DateTime($date_fin));
-            
+
             $this->em->flush();
 
             $response = [

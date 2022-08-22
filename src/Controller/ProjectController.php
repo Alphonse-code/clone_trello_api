@@ -74,7 +74,7 @@ class ProjectController extends ApiController
 
     /**
      * for create new project you needs title,type, description,status, bigindate and enddate
-     * @Route("/create", name="app_create")
+     * @Route("/creates", name="create", methods={"POST"})
      *
      * @param Request $request
      * @return JsonResponse
@@ -93,18 +93,15 @@ class ProjectController extends ApiController
             );
         }
 
-        if ($request->getMethod() == 'POST') {
+       // if ($request->getMethod() == 'POST') {
             $request = $this->transformJsonBody($request);
-
             // On recuper le valeur de chaque champ
             $title = $request->get('title');
             $type = $request->get('type');
             $description = $request->get('description');
             $status = $request->get('status');
             $bigindate = $request->get('bigindate');
-
             $enddate = $request->get('enddate');
-
             if (
                 !empty($description) ||
                 !empty($bigindate) ||
@@ -120,7 +117,6 @@ class ProjectController extends ApiController
                 $project->setStatusProject($status);
                 $project->setBigindateProject(new \DateTime($bigindate));
                 $project->setEnddateProject(new \DateTime($enddate));
-
                 $project->setUser($this->getUser());
                 $this->em->persist($project);
                 $this->em->flush();
@@ -137,7 +133,7 @@ class ProjectController extends ApiController
                 'message' => 'Champ invalid',
             ];
             return new JsonResponse($array, Response::HTTP_BAD_REQUEST);
-        }
+        //}
     }
     /**
      * @Route("/seul/{id}", name="app_project_id", methods={"GET"})

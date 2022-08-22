@@ -47,11 +47,12 @@ class AuthentificationController extends ApiController
         UserPasswordEncoderInterface $encoder
     ): JsonResponse {
         $request = $this->transformJsonBody($request);
+        
         $username = $request->get('username');
         $password = $request->get('password');
         $email = $request->get('email');
         $roles = $request->get('roles');
-
+        
         if (empty($username) || empty($password) || empty($email)) {
             $array = [
                 'success' => false,
@@ -72,6 +73,7 @@ class AuthentificationController extends ApiController
             $user->setEmail($email);
             $user->setUsername($username);
             $user->setRoles($roles);
+           
             $this->em->persist($user);
             $this->em->flush();
             $array = [
@@ -154,8 +156,8 @@ class AuthentificationController extends ApiController
         MailerInterface $mailer
     ): JsonResponse {
         $request = $this->transformJsonBody($request);
-        $email = $request->get('email');
-        $user = $this->repository->findOneBy(['email' => $email]);
+        $email = $request->get('username');
+        $user = $this->repository->findOneBy(['username' => $email]);
         if (!$user) {
             $array = [
                 'success' => false,
@@ -185,7 +187,7 @@ class AuthentificationController extends ApiController
                 ->text('Mot de passe oublier')
                 ->html(
                     " 
-            <h3>Veuillez-trouvez ci- après le code de reinitialisation de votre mot de passe</h3> 
+            <h3>Veuillez-trouvez ci- après le lien pour reinitialiser votre mot de passe</h3> 
              <h3 style='color:blue; font-size: 20px; font-weight: bold; text-decoration: none;'>
             <a href='http://localhost:3000/new_password/$token'>Cliquez-ici pour réinitialiser</a></h3>"
                 );

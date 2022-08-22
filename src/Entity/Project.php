@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Entity\Task;
 use App\Entity\Users;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
@@ -59,11 +58,7 @@ class Project
      */
     private $user;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Task::class, mappedBy="projects")
-     */
-    private $tasks;
-
+   
     public function getId(): ?int
     {
         return $this->id;

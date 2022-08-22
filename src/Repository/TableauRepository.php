@@ -3,10 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\Tableau;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<Tableau>
@@ -18,9 +19,12 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class TableauRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private $em;
+    
+    public function __construct(ManagerRegistry $registry,EntityManagerInterface $em)
     {
         parent::__construct($registry, Tableau::class);
+        $this->em = $em;
     }
 
     /**
@@ -46,6 +50,8 @@ class TableauRepository extends ServiceEntityRepository
             $this->_em->flush();
         }
     }
+
+  
 
     // /**
     //  * @return Tableau[] Returns an array of Tableau objects
