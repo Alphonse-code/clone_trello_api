@@ -32,30 +32,6 @@ class Carte
     private $title;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Labels::class, inversedBy="carte")
-     * @ORM\JoinColumn(nullable=true,onDelete="CASCADE")
-     *@Groups({"read:tableau_with_card"})
-     */
-    private $labels;
-   
-    /**
-     * @ORM\ManyToOne(targetEntity=Users::class, inversedBy="carte")
-     * @ORM\JoinColumn(nullable=true)
-     *
-     */
-    private $user;
-
-    /**
-     * @ORM\OneToOne(targetEntity=Tasks::class, mappedBy="carte")
-     * 
-     */
-    private $tasks;
-
-    
-    
-
-    
-    /**
      * @ORM\Column(type="string", length=20, nullable=true)
      * @Groups({"read:tableau_with_card"})
      */
@@ -73,19 +49,31 @@ class Carte
      */
     private $tableau;
 
-   
+    /**
+     * @ORM\OneToMany(targetEntity=Labels::class, mappedBy="cartes")
+     * @Groups({"read:tableau_with_card"})
+     */
+    private $labels;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Tasks::class, mappedBy="cartes")
+     * @Groups({"read:tableau_with_card"})
+     */
+    private $tasks;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Users::class, mappedBy="cartes")
+     * @Groups({"read:tableau_with_card"})
+     */
+    private $users;
 
     public function __construct()
     {
         $this->tableaus = new ArrayCollection();
-       // $this->tasks = new ArrayCollection();
-        //$this->user = new ArrayCollection();
+        $this->users = new ArrayCollection();
+        $this->labels = new ArrayCollection();
     }
-
-    public function getUser(): Collection
-    {
-        return $this->user;
-    }
+   
     public function getId(): ?int
     {
         return $this->id;
@@ -103,17 +91,7 @@ class Carte
         return $this;
     }
 
-    public function getLabels(): ?array
-    {
-        return $this->labels;
-    }
-
-    public function setLabels(?array $labels): self
-    {
-        $this->labels = $labels;
-
-        return $this;
-    }
+   
 
     public function getDate(): ?string
     {
@@ -127,17 +105,6 @@ class Carte
         return $this;
     }
 
-    public function getTasks(): Collection
-    {
-        return $this->tasks;
-    }
-
-    public function setTasks(?array $tasks): self
-    {
-        $this->tasks = $tasks;
-
-        return $this;
-    }
 
     public function getDescription(): ?string
     {
@@ -165,7 +132,6 @@ class Carte
             $this->tableaus[] = $tableau;
             $tableau->setCarte($this);
         }
-
         return $this;
     }
 
@@ -177,7 +143,6 @@ class Carte
                 $tableau->setCarte(null);
             }
         }
-
         return $this;
     }
 
@@ -189,6 +154,80 @@ class Carte
     public function setTableau(?Tableau $tableau): self
     {
         $this->tableau = $tableau;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Tasks>
+     */
+    public function getTasks(): Collection
+    {
+        return $this->tasks;
+    }
+
+    public function addTask(Tasks $task): self
+    {
+        if (!$this->tasks->contains($task)) {
+            $this->tasks[] = $task;
+            $task->setCartes($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTask(Tasks $task): self
+    {
+        if ($this->tasks->removeElement($task)) {
+            // set the owning side to null (unless already changed)
+            if ($task->getCartes() === $this) {
+                $task->setCartes(null);
+            }
+        }
+
+        return $this;
+    }
+     /**
+     * @return Collection<int, Labels>
+     */
+    public function getLabels(): ?Collection
+    {
+        return $this->labels;
+    }
+
+    public function setLabels(?Labels $labels): self
+    {
+        $this->labels = $labels;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Users>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(Users $user): self
+    {
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+            $user->setCartes($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(Users $user): self
+    {
+        if ($this->users->removeElement($user)) {
+            // set the owning side to null (unless already changed)
+            if ($user->getCartes() === $this) {
+                $user->setCartes(null);
+            }
+        }
 
         return $this;
     }

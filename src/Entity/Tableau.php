@@ -33,16 +33,15 @@ class Tableau
     /**
      * @ORM\OneToMany(targetEntity=Carte::class, mappedBy="tableau")
      * @Groups({"read:tableau_with_card"})
-     * 
      */
     private $carte;
 
     public function __construct()
     {
         $this->carte = new ArrayCollection();
+
     }
 
-  
     public function getId(): ?int
     {
         return $this->id;
@@ -59,15 +58,7 @@ class Tableau
 
         return $this;
     }
-    /*
-      @return Collection|Carte[]
-     
-    public function getCarte(): Collection
-    {
-        return $this->carte;
-    }
-*/
-
+ 
     public function getCarte(): ?Collection
     {
         return $this->carte;

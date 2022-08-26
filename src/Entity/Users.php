@@ -6,6 +6,7 @@ use App\Entity\Project;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -20,6 +21,7 @@ class Users implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
+     * @Groups({"read:tableau_with_card"})
      */
     private $id;
 
@@ -44,11 +46,6 @@ class Users implements UserInterface
      */
     private $projects;
 
-  
-    /**
-     * @ORM\OneToMany(targetEntity=Carte::class, mappedBy="user")
-     */
-    private $carte;
     
     /**
      * @ORM\Column(type="json")
@@ -80,8 +77,15 @@ class Users implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=20, nullable=true)
+     * @Groups({"read:tableau_with_card"})
      */
     private $images;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Carte::class, inversedBy="users")
+     */
+    private $cartes;
+
 
     public function getId(): ?int
     {
@@ -193,6 +197,18 @@ class Users implements UserInterface
     public function setImages(?string $images): self
     {
         $this->images = $images;
+
+        return $this;
+    }
+
+    public function getCartes(): ?Carte
+    {
+        return $this->cartes;
+    }
+
+    public function setCartes(?Carte $cartes): self
+    {
+        $this->cartes = $cartes;
 
         return $this;
     }

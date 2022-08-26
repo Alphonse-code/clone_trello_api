@@ -42,29 +42,10 @@ class TableauController extends ApiController
      */
     public function getBoard(): JsonResponse
     {
-        $list = $this->carteRepository->getCarteList();
 
         $boards = $this->repository->findAll();
         $lists = $this->normalizer->normalize($boards,null,["groups" => "read:tableau_with_card"]);
-        $cartess = $this->carteRepository->findAll();
-       // dd($cartess);
-        $carte = $this->carteRepository->carteList();
        
-        $data = [];
-        foreach($list as $board) {
-        $data[] =[
-                'id' => $board['idTab'],
-                'title' => $board['nomTab'],
-                'cards' => [[
-                    'id'=>$board['id'],
-                    'title'=>$board['title'],
-                    'labels'=>[],
-                    'date'=>$board['date'],
-                    'tasks'=> [],
-                    'desc'=>$board['description'],
-                ]]
-                ];  
-       }
        return new JsonResponse($lists, Response::HTTP_OK);
     }
     
