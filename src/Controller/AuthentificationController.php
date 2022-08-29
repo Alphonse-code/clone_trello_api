@@ -42,12 +42,8 @@ class AuthentificationController extends ApiController
      * @return JsonResponse
      *
      */
-    public function register(
-        Request $request,
-        UserPasswordEncoderInterface $encoder
-    ): JsonResponse {
+    public function register(Request $request, UserPasswordEncoderInterface $encoder): JsonResponse {
         $request = $this->transformJsonBody($request);
-        
         $username = $request->get('username');
         $password = $request->get('password');
         $email = $request->get('email');
@@ -97,10 +93,7 @@ class AuthentificationController extends ApiController
      * @param JWTTokenManagerInterface $JWTManager
      * @return JsonResponse
      */
-    public function login(
-        UserInterface $user,
-        JWTTokenManagerInterface $JWTManager
-    ): JsonResponse {
+    public function login(UserInterface $user,JWTTokenManagerInterface $JWTManager): JsonResponse {
         if (null !== $user) {
             $array = [
                 'token' => $JWTManager->create($user),

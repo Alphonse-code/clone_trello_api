@@ -83,6 +83,11 @@ class Labels
         return $this->cartes;
     }
 
+    public function setCartes(?Carte $carte)
+    {
+        $this->cartes = $carte;
+        return $this;
+    }
     public function addCarte(Carte $carte): self
     {
         if (!$this->cartes->contains($carte)) {

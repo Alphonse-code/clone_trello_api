@@ -92,7 +92,4 @@ class Tableau
 
         return $this;
     }
-
-   
-
 }

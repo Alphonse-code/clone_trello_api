@@ -24,22 +24,19 @@ class CarteController extends ApiController
     private $repository;
     private $carteRepository;
     private $tableauRepository;
+   private $boardRepository;
+
     public function __construct(
         EntityManagerInterface $em,
-        CarteRepository $carteRepository
+        CarteRepository $carteRepository,
+        TableauRepository $boardRepository
         
     ) {
         $this->em = $em;
         $this->carteRepository = $carteRepository;
+        $this->boardRepository = $boardRepository;
     }
 
-    /**
-     * @Route("/list_carte", name="app_list_carte")
-     */
-    public function index(): Response
-    {
-        
-    }
      /**
      * @Route("/create_carte", name="app_create_carte")
      *
@@ -77,11 +74,69 @@ class CarteController extends ApiController
     }
 
     /**
-     * @Route("/update_card/{id}", name="app_update_card" , methods={"PUT"})
+     * @Route("/update_date/{id}", name="app_update_card" , methods={"PUT"})
      */
-    public function update_card(Request $request, $id)
+    public function update_date(Request $request, $id)
     {
         $carte = $this->carteRepository->find($id);
-        
+
+        $request = $this->transformJsonBody($request);
+        $date = $request->get('date');
+        $carte->setDate($date);
+        $this->em->flush();
+        $response[] = [
+            'success' => true,
+            'code' => 200,
+            'message' => 'Cards updated successfully',
+        ];
+        return new JsonResponse($response, Response::HTTP_OK);
+    
+    }
+
+    /**
+     * @Route("/update_desc/{id}", name="app_update_desc" , methods={"PUT"})
+     */
+    public function update_desc(Request $request, $id)
+    {
+        $carte = $this->carteRepository->find($id);
+
+        $request = $this->transformJsonBody($request);
+        $desc = $request->get('desc');
+        $carte->setDescription($desc);
+        $this->em->flush();
+        $response[] = [
+            'success' => true,
+            'code' => 200,
+            'message' => 'Cards updated successfully',
+        ];
+        return new JsonResponse($response, Response::HTTP_OK);
+    }
+
+    /**
+     * @Route("/remove_card/{id}", name="remove_card")
+     */
+    public function remove_card(Request $request, $id): JsonResponse
+    {
+        $carte = $this->carteRepository->find($id);
+        $this->em->remove($carte);
+        $this->em->flush();
+        $array[] = ['success' => true,'code' => 200,'message' => 'Card deleted successfully'];
+        return new JsonResponse($array, Response::HTTP_OK);
+    }
+
+    /**
+     * @Route("/drag_and_drop/{id}", name="drag_and_drop")
+     * 
+     */
+    public function drag_and_drop(Request $request, $id): JsonResponse
+    {
+        $carte = $this->carteRepository->find($id);
+        $request = $this->transformJsonBody($request);
+        $boardId = $request->get('tableau_id');
+        $board = $this->boardRepository->find($boardId);
+        $carte->setTableau($board);
+        $this->em->flush();
+        $array[] = ['success' => true,'code' => 200,'message' => 'Card draged successfully'];
+        return new JsonResponse($array, Response::HTTP_OK);
     }
 }

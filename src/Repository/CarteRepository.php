@@ -74,43 +74,10 @@ class CarteRepository extends ServiceEntityRepository
 
 
 
-    public function carteList()
+    public function carteList($id)
     {
-        $sql0="SELECT
-        tableau.id 'id_tab',
-        tableau.nom 'nom_tab',
-        carte.`id` 'id_carte',
-        carte.`title`,
-        carte.`date`,
-        carte.`description`,
-        carte.`labels_id`,
-        carte.`user_id`,
-        carte.`tableau_id`,
-        tasks.id 'id_task',
-        tasks.copleted,
-        tasks.text,
-        tasks.carte_id,
-        labels.id 'id_lab',
-        labels.color,
-        labels.text
-    FROM
-        tableau
-    LEFT JOIN `carte` ON carte.tableau_id = tableau.id
-    LEFT JOIN tasks ON tasks.carte_id = carte.id
-    LEFT JOIN labels ON labels.id = carte.labels_id;";
+        $sql="SELECT * FROM `carte` WHERE id=$id;";
 
-
-        $sql = "SELECT
-        carte.`id`,
-        carte.`title`,
-        carte.`date`,
-        carte.`description`,
-        carte.`labels_id`,
-        carte.`user_id`,
-        carte.`tableau_id`
-    FROM
-        `carte`
-    INNER JOIN tableau ON tableau.id=carte.tableau_id";
         $stmt = $this->em->getConnection()->prepare($sql);
         $result = $stmt->executeQuery()->fetchAllAssociative();
        return $result;

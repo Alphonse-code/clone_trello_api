@@ -76,7 +76,6 @@ class Tasks
     public function setCartes(?Carte $cartes): self
     {
         $this->cartes = $cartes;
-
         return $this;
     }
 }
