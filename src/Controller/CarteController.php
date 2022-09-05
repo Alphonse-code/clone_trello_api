@@ -139,4 +139,5 @@ class CarteController extends ApiController
         $array[] = ['success' => true,'code' => 200,'message' => 'Card draged successfully'];
         return new JsonResponse($array, Response::HTTP_OK);
     }
+    
 }

@@ -38,6 +38,13 @@ class Tasks
      */
     private $cartes;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Project::class, inversedBy="tasks")
+     */
+    private $projets;
+
+    
+
 
     public function getId(): ?int
     {
@@ -76,6 +83,18 @@ class Tasks
     public function setCartes(?Carte $cartes): self
     {
         $this->cartes = $cartes;
+        return $this;
+    }
+
+    public function getProjets(): ?Project
+    {
+        return $this->projets;
+    }
+
+    public function setProjets(?Project $projets): self
+    {
+        $this->projets = $projets;
+
         return $this;
     }
 }

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Entity\Users;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\ManyToOne;
@@ -57,6 +59,16 @@ class Project
      *
      */
     private $user;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Tasks::class, mappedBy="projets")
+     */
+    private $tasks;
+
+    public function __construct()
+    {
+        $this->tasks = new ArrayCollection();
+    }
 
    
     public function getId(): ?int
@@ -156,6 +168,28 @@ class Project
     public function setTasks(?Task $tasks): self
     {
         $this->tasks = $tasks;
+        return $this;
+    }
+
+    public function addTask(Tasks $task): self
+    {
+        if (!$this->tasks->contains($task)) {
+            $this->tasks[] = $task;
+            $task->setProjets($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTask(Tasks $task): self
+    {
+        if ($this->tasks->removeElement($task)) {
+            // set the owning side to null (unless already changed)
+            if ($task->getProjets() === $this) {
+                $task->setProjets(null);
+            }
+        }
+
         return $this;
     }
    
