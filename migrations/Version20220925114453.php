@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20220831034718 extends AbstractMigration
+final class Version20220925114453 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,16 +20,14 @@ final class Version20220831034718 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE tasks ADD projets_id INT DEFAULT NULL');
-        $this->addSql('ALTER TABLE tasks ADD CONSTRAINT FK_50586597597A6CB7 FOREIGN KEY (projets_id) REFERENCES project (id)');
-        $this->addSql('CREATE INDEX IDX_50586597597A6CB7 ON tasks (projets_id)');
+        $this->addSql('ALTER TABLE carte DROP FOREIGN KEY FK_BAD4FFFD67B3B43D');
+        $this->addSql('ALTER TABLE carte ADD CONSTRAINT FK_BAD4FFFD67B3B43D FOREIGN KEY (users_id) REFERENCES users (id) ON DELETE CASCADE');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE tasks DROP FOREIGN KEY FK_50586597597A6CB7');
-        $this->addSql('DROP INDEX IDX_50586597597A6CB7 ON tasks');
-        $this->addSql('ALTER TABLE tasks DROP projets_id');
+        $this->addSql('ALTER TABLE carte DROP FOREIGN KEY FK_BAD4FFFD67B3B43D');
+        $this->addSql('ALTER TABLE carte ADD CONSTRAINT FK_BAD4FFFD67B3B43D FOREIGN KEY (users_id) REFERENCES users (id)');
     }
 }

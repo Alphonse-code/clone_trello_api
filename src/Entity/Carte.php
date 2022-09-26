@@ -62,16 +62,19 @@ class Carte
     private $tasks;
 
     /**
-     * @ORM\OneToMany(targetEntity=Users::class, mappedBy="cartes")
+     * @ORM\ManyToOne(targetEntity=users::class, inversedBy="cartes")
+     * @ORM\JoinColumn(nullable=true,onDelete="CASCADE")
      * @Groups({"read:tableau_with_card"})
      */
     private $users;
 
+
     public function __construct()
     {
         $this->tableaus = new ArrayCollection();
-        $this->users = new ArrayCollection();
         $this->labels = new ArrayCollection();
+       // $this->users = new ArrayCollection();
+        
     }
    
     public function getId(): ?int
@@ -202,33 +205,14 @@ class Carte
         return $this;
     }
 
-    /**
-     * @return Collection<int, Users>
-     */
-    public function getUsers(): Collection
+    public function getUsers(): ?users
     {
         return $this->users;
     }
 
-    public function addUser(Users $user): self
+    public function setUsers(?users $users): self
     {
-        if (!$this->users->contains($user)) {
-            $this->users[] = $user;
-            $user->setCartes($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUser(Users $user): self
-    {
-        if ($this->users->removeElement($user)) {
-            // set the owning side to null (unless already changed)
-            if ($user->getCartes() === $this) {
-                $user->setCartes(null);
-            }
-        }
-
+        $this->users = $users;
         return $this;
     }
 }

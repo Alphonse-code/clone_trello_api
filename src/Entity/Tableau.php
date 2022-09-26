@@ -89,7 +89,6 @@ class Tableau
                 $carte->setTableau(null);
             }
         }
-
         return $this;
     }
 }

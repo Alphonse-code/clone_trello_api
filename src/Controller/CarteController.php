@@ -6,6 +6,7 @@ use App\Entity\Carte;
 use App\Entity\Tableau;
 use App\Controller\ApiController;
 use App\Repository\CarteRepository;
+use App\Repository\UsersRepository;
 use App\Repository\TableauRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -25,16 +26,19 @@ class CarteController extends ApiController
     private $carteRepository;
     private $tableauRepository;
    private $boardRepository;
+   private $userRepository;
 
     public function __construct(
         EntityManagerInterface $em,
         CarteRepository $carteRepository,
-        TableauRepository $boardRepository
+        TableauRepository $boardRepository,
+        UsersRepository $userRepository
         
     ) {
         $this->em = $em;
         $this->carteRepository = $carteRepository;
         $this->boardRepository = $boardRepository;
+        $this->userRepository = $userRepository;
     }
 
      /**
@@ -136,8 +140,32 @@ class CarteController extends ApiController
         $board = $this->boardRepository->find($boardId);
         $carte->setTableau($board);
         $this->em->flush();
-        $array[] = ['success' => true,'code' => 200,'message' => 'Card draged successfully'];
+        $array[] = [
+            'success' => true,
+            'code' => 200,
+            'message' => 'Card draged successfully'
+        ];
         return new JsonResponse($array, Response::HTTP_OK);
     }
-    
+
+    /**
+     * @Route("/assign_card/{id}", name="assign_card")
+     */
+    public function assigner_tache(Request $request, $id): JsonResponse
+    {
+        $carte = $this->carteRepository->find($id);
+        
+        $request = $this->transformJsonBody($request);
+        $user_id = $request->get('user_id');
+
+        $user = $this->userRepository->find($user_id);
+        $carte->setUsers($user);
+        $this->em->flush();
+        $array[] = [
+            'success' => true,
+            'code' => 200,
+            'message' => 'Card assigned successfully'
+        ];
+        return new JsonResponse($array, Response::HTTP_OK);
+    }
 }

@@ -11,8 +11,10 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
@@ -42,13 +44,26 @@ class AuthentificationController extends ApiController
      * @return JsonResponse
      *
      */
-    public function register(Request $request, UserPasswordEncoderInterface $encoder): JsonResponse {
+    public function register(Request $request, UserPasswordEncoderInterface $encoder, SluggerInterface $slugger): JsonResponse {
         $request = $this->transformJsonBody($request);
         $username = $request->get('username');
         $password = $request->get('password');
         $email = $request->get('email');
         $roles = $request->get('roles');
+        $image = $request->get('image');
         
+        if($image){
+            $originalFilename = pathinfo($image->getClientOriginalFilename(), PATHINFO_FILENAME);
+            $safeFilename = $slugger->slug($originalFilename);
+            $newFilename = $safeFilename.'-'.uniqid().'.'.$image->guessExtension();
+
+            try {
+                $image->move(
+                    $this->$this->getParameter('images_directory'), 
+                    $newFilename
+                );
+            }catch(FileException $e) {}
+        }
         if (empty($username) || empty($password) || empty($email)) {
             $array = [
                 'success' => false,
@@ -69,7 +84,7 @@ class AuthentificationController extends ApiController
             $user->setEmail($email);
             $user->setUsername($username);
             $user->setRoles($roles);
-           
+            $user->setImage($newFilename);
             $this->em->persist($user);
             $this->em->flush();
             $array = [
