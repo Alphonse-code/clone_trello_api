@@ -14,7 +14,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
@@ -46,24 +48,24 @@ class AuthentificationController extends ApiController
      */
     public function register(Request $request, UserPasswordEncoderInterface $encoder, SluggerInterface $slugger): JsonResponse {
         $request = $this->transformJsonBody($request);
+       
+
         $username = $request->get('username');
         $password = $request->get('password');
         $email = $request->get('email');
         $roles = $request->get('roles');
-        $image = $request->get('image');
         
-        if($image){
-            $originalFilename = pathinfo($image->getClientOriginalFilename(), PATHINFO_FILENAME);
-            $safeFilename = $slugger->slug($originalFilename);
-            $newFilename = $safeFilename.'-'.uniqid().'.'.$image->guessExtension();
+        $images = $request->get('image');
+    
+        $originalFilename = pathinfo($image->getClientOriginalFilename(), PATHINFO_FILENAME);
+        $newFilename = $slugger->slug($originalFilename);
+        $newFilename = $newFilename.'-'.uniqid().'.'.$image->guessExtension();
 
-            try {
-                $image->move(
-                    $this->$this->getParameter('images_directory'), 
-                    $newFilename
+        try {
+            $image->move($this->$this->getParameter('images_directory'), $newFilename
                 );
             }catch(FileException $e) {}
-        }
+        
         if (empty($username) || empty($password) || empty($email)) {
             $array = [
                 'success' => false,
@@ -173,28 +175,17 @@ class AuthentificationController extends ApiController
                 'message' => 'Email non trouvé dans la base de données',
             ];
             return new JsonResponse($array, Response::HTTP_NOT_FOUND);
-        } else {
-            //$data = [];
-            // $data[] = [
-            //     'user_id' => $user->getId(),
-            //     'user_username' => $user->getUsername(),
-            //     'user_email' => $user->getEmail(),
-            //     'user_password' => $user->getPassword(),
-            //     'user_roles' => $user->getRoles(),
-            // ];
+        } else { 
             $token = $tokenGenerator->generateToken();
-
             $em = $this->getDoctrine()->getManager();
             $user->setForgotPasswordToke($token);
             $em->flush();
-
             $email = (new Email())
                 ->from('solofondraibedani@gmail.com')
                 ->to($email)
                 ->subject('Mot de passe oublier')
                 ->text('Mot de passe oublier')
-                ->html(
-                    " 
+                ->html("
             <h3>Veuillez-trouvez ci- après le lien pour reinitialiser votre mot de passe</h3> 
              <h3 style='color:blue; font-size: 20px; font-weight: bold; text-decoration: none;'>
             <a href='http://localhost:3000/new_password/$token'>Cliquez-ici pour réinitialiser</a></h3>"
@@ -209,7 +200,6 @@ class AuthentificationController extends ApiController
             return new JsonResponse($array, JsonResponse::HTTP_OK);
         }
     }
-
     /**
      * Apres forgot password, creer nouveau password
      *
@@ -377,5 +367,23 @@ class AuthentificationController extends ApiController
             'message' => 'User deleted successfully',
         ];
         return new JsonResponse($response, Response::HTTP_OK);
+    }
+
+    /**
+     * @Route("/api/users_image", name="user_image")
+     */
+    public function img_usr(): JsonResponse
+    {
+        $usr_img = $this->repository->get_allImg();
+        
+        $data = [];
+        foreach ($usr_img as $user) {
+            $data[] = [
+                'id' => $user['id'],
+                'name' => $user['email'],
+                'image' => $user['image'],
+            ];
+        }
+        return new JsonResponse($data, Response::HTTP_OK);
     }
 }

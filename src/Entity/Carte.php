@@ -70,7 +70,7 @@ class Carte
 
 
     public function __construct()
-    {
+    {   
         $this->tableaus = new ArrayCollection();
         $this->labels = new ArrayCollection();
        // $this->users = new ArrayCollection();
@@ -107,8 +107,6 @@ class Carte
 
         return $this;
     }
-
-
     public function getDescription(): ?string
     {
         return $this->description;
@@ -205,12 +203,12 @@ class Carte
         return $this;
     }
 
-    public function getUsers(): ?users
+    public function getUsers(): ?Users
     {
         return $this->users;
     }
 
-    public function setUsers(?users $users): self
+    public function setUsers(?Users $users): self
     {
         $this->users = $users;
         return $this;

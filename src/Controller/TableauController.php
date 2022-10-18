@@ -15,14 +15,15 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
  * @Route("api/board")
- *
+ * 
  */
 class TableauController extends ApiController
-{
+{  
     private $em;
     private $repository;
     private $carteRepository;
     private NormalizerInterface $normalizer;
+    
     public function __construct(
         EntityManagerInterface $em,
         TableauRepository $repository,
@@ -37,13 +38,12 @@ class TableauController extends ApiController
 
     /**
      * @Route("/board_list", name="board_list")
-     *
      * @return JsonResponse
      */
     public function getBoard(): JsonResponse
     {
-
         $boards = $this->repository->findAll();
+        
         $lists = $this->normalizer->normalize($boards,null,["groups" => "read:tableau_with_card"]);
        
        return new JsonResponse($lists, Response::HTTP_OK);

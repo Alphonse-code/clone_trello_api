@@ -54,13 +54,15 @@ class CarteController extends ApiController
             $titre = $request->get('title');
             $board = $request->get('tableau_id');
             $tab = $manager->getRepository(Tableau::class)->find($board);
-            //dd($tab);
+           
             if (!empty($titre)) {
+                
                 $carte = new Carte();
                 $carte->setTitle($titre);
                 $carte->setTableau($tab);
                 $this->em->persist($carte);
                 $this->em->flush();
+
                 $response[] = [
                     'success' => true,
                     'code' => 200,
@@ -70,7 +72,7 @@ class CarteController extends ApiController
             }
             $response[] = [
                 'success' => false,
-                'code' => 200,
+                'code' => 500,
                 'message' => 'Handled errors occurred during created cards',
             ];
             return new JsonResponse($response);
@@ -126,8 +128,9 @@ class CarteController extends ApiController
         $this->em->flush();
         $array[] = ['success' => true,'code' => 200,'message' => 'Card deleted successfully'];
         return new JsonResponse($array, Response::HTTP_OK);
-    }
 
+    }
+    
     /**
      * @Route("/drag_and_drop/{id}", name="drag_and_drop")
      * 
@@ -157,10 +160,10 @@ class CarteController extends ApiController
         
         $request = $this->transformJsonBody($request);
         $user_id = $request->get('user_id');
-
         $user = $this->userRepository->find($user_id);
         $carte->setUsers($user);
         $this->em->flush();
+        
         $array[] = [
             'success' => true,
             'code' => 200,

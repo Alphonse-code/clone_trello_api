@@ -65,7 +65,6 @@ class Users implements UserInterface
     {
         $this->username = $username;
         $this->cartes = new ArrayCollection();
-        
     }
 
     /**
@@ -83,7 +82,6 @@ class Users implements UserInterface
 
      /**
      * @ORM\Column(type="string", length=255)
-     * @var string
      * @Groups({"read:tableau_with_card"})
      */
     private $image;
@@ -179,7 +177,7 @@ class Users implements UserInterface
      * @param array $roles
      * @return void
      */
-    public function setRoles(array $roles)
+    public function setRoles( $roles)
     {
         $this->roles = $roles;
     }
@@ -261,8 +259,6 @@ class Users implements UserInterface
                 $carte->setUsers(null);
             }
         }
-
         return $this;
     }
-
 }

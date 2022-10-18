@@ -83,6 +83,14 @@ class CarteRepository extends ServiceEntityRepository
        return $result;
     }
 
+    public function get_resultet()
+    {
+        $sql = "SELECT debiteur.id,codeville,situation,codeclient,agent,coderegion,codelot,comptedeb,refdeb,encaissement.nomdeb,adressedeb,teldeb,emaildeb,autreinfo,datedossier,anciendossier,montantcreance,(montantcreance - encaissement.montant) as soldeactuel, (cumulregle + encaissement.montant) as cumul FROM encaissement,debiteur";
+        $stmt = $this->em->getConnection()->prepare($sql);
+        $result = $stmt->executeQuery()->fetchAllAssociative();
+       return $result;
+    }
+
     // /**
     //  * @return Carte[] Returns an array of Carte objects
     //  */

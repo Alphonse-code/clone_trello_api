@@ -3,10 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\Users;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<Users>
@@ -18,9 +19,11 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class UsersRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private $em;
+    public function __construct(ManagerRegistry $registry, EntityManagerInterface $em)
     {
         parent::__construct($registry, Users::class);
+        $this->em = $em;
     }
 
     /**
@@ -63,7 +66,6 @@ class UsersRepository extends ServiceEntityRepository
 
     /**
      * Validation adress email s'il existe
-     *
      * @param [type] $email
      * @return Users|null
      */
@@ -76,20 +78,14 @@ class UsersRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    // /**
-    //  * @return Users[] Returns an array of Users objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * get all users id and image from the database
+     */
+    public function get_allImg()
     {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('u.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        $sql="SELECT id, email,image FROM users";
+        $stmt = $this->em->getConnection()->prepare($sql);
+        $result = $stmt->executeQuery()->fetchAll();
+       return $result;
     }
-    */
 }
