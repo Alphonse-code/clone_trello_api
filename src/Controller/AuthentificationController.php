@@ -129,7 +129,7 @@ class AuthentificationController extends ApiController
      */
     public function getAllUsers(): JsonResponse
     {
-        if (!$this->isGranted('ROLE_USER')) {
+       /* if (!$this->isGranted('ROLE_USER')) {
             return new JsonResponse(
                 [
                     'success' => false,
@@ -138,8 +138,10 @@ class AuthentificationController extends ApiController
                 ],
                 Response::HTTP_UNAUTHORIZED
             );
-        }
+        }*/
+
         $users = $this->repository->findAll();
+        
         $data = [];
         foreach ($users as $user) {
             $data[] = [
@@ -147,7 +149,7 @@ class AuthentificationController extends ApiController
                 'user_username' => $user->getUsername(),
                 'user_email' => $user->getEmail(),
                 'user_password' => $user->getPassword(),
-                'user_roles' => $user->getRoles(),
+                'user_photo' => $user->getImage(),
             ];
         }
         return new JsonResponse($data, Response::HTTP_OK);

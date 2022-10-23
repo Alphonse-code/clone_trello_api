@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Carte;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mailer\MailerInterface;
 use App\Entity\Tableau;
 use App\Controller\ApiController;
 use App\Repository\CarteRepository;
@@ -154,13 +156,25 @@ class CarteController extends ApiController
     /**
      * @Route("/assign_card/{id}", name="assign_card")
      */
-    public function assigner_tache(Request $request, $id): JsonResponse
+    public function assigner_tache(Request $request, $id, MailerInterface $mailer): JsonResponse
     {
         $carte = $this->carteRepository->find($id);
         
         $request = $this->transformJsonBody($request);
         $user_id = $request->get('user_id');
         $user = $this->userRepository->find($user_id);
+        $email = $user->getUsername();
+        $email = (new Email())
+                ->from('solofondraibedani@gmail.com')
+                ->to($email)
+                ->subject('NOTIFICATION | GESTION DE PROJET')
+                ->text('Invitation sur le projet ICamSock')
+                ->html("
+            <h3> Vous êtez assigner à un tâche sur le projet ICamSock</h3> 
+             <h3 style='color:blue; font-size: 20px; font-weight: bold; text-decoration: none;'>
+            <a href='http://localhost:3000'>Cliquez-ici pour accéder à l'application</a></h3>"
+            );
+        $mailer->send($email);
         $carte->setUsers($user);
         $this->em->flush();
         
